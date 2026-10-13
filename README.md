@@ -105,17 +105,20 @@ The whole point of this analysis was to show that the decision is **sensitive** 
 ---
 
 ## Folder Structure
+
+```
 cod-rto-order-risk/
 ├── README.md
 ├── data/
-│ ├── raw/ (raw data with injected issues)
-│ └── clean/ (cleaned data)
+│   ├── raw/          (raw data with injected issues)
+│   └── clean/        (cleaned data)
 ├── scripts/
-│ └── generate_data.py
-├── sql/ (SQL analysis)
-├── excel/ (KPI cross-check)
-├── powerbi/ (dashboard)
-└── docs/ (detailed documentation)
+│   └── generate_data.py
+├── sql/              (SQL analysis)
+├── excel/            (KPI cross-check)
+├── powerbi/          (dashboard)
+└── docs/             (detailed documentation)
+```
 
 ## Documentation
 
