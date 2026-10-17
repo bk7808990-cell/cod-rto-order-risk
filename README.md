@@ -60,10 +60,6 @@ Scope Limitations: The direct loss calculation does not include lost sales, mark
 
  AI Workflow: I designed the business logic, data structure, and analytical approach independently. I used AI purely as a coding assistant to accelerate the Python script and DAX formulas. However, I manually reviewed, tested, and validated every calculation against my SQL and Excel outputs to ensure 100% accuracy.
 
-
-
-
-
 ```text
 cod-rto-order-risk/
 ├── README.md
@@ -75,23 +71,3 @@ cod-rto-order-risk/
 ├── excel/            (KPI cross-check & Sensitivity)
 ├── powerbi/          (5-page interactive dashboard)
 └── docs/             (Detailed markdown documentation)
-
-Limitations & AI Disclosure
-To be fully transparent about the boundaries of this analysis:
-
-Synthetic Data: All patterns are design assumptions based on industry logic, not real-world discoveries. The findings cannot be generalised to a real business without a pilot.
-
-Scope Limitations: The direct loss calculation does not include lost sales, marketing spend, or payment gateway fees.
-
-AI Workflow: I designed the business logic, data structure, and analytical approach independently. I used AI purely as a coding assistant to accelerate the Python script and DAX formulas. However, I manually reviewed, tested, and validated every calculation against my SQL and Excel outputs to ensure 100% accuracy.
-
-
-
-
-
-
-
-
-
-
-
