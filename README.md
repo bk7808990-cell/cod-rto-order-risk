@@ -1,159 +1,97 @@
 # COD/RTO Order Risk and Unit Economics
 
-I built this project to understand a problem that Indian D2C sellers face every day — Cash on Delivery orders that come back. It started as a simple question: can we predict which COD orders will return, and does calling the customer actually help?
+## Overview
+This is an end-to-end Business + Data Analyst portfolio project. It analyzes the risk of Return to Origin (RTO) for Cash on Delivery (COD) orders, builds a unit economics model, and simulates the impact of a confirmation call strategy using an A/B test approach. 
 
-This is my Business + Data Analyst portfolio project. It covers the full flow — designing the data rules, generating a synthetic dataset, cleaning it, and then running an A/B test to see if a confirmation call makes a difference.
+The core business question was: **Should we call high-risk COD customers before dispatching, and does the call cost justify the RTO reduction?**
 
----
+## The Problem (Real-World Context)
+In the Indian D2C e-commerce space, COD is highly preferred but carries a massive risk — customers can refuse delivery at the door. When this happens, the seller bears the cost of forward shipping, return shipping, and damaged packaging. 
+The management needed a data-backed decision: Can we identify which orders are high-risk, and does a pre-dispatch confirmation call reduce the loss?
 
-## The Problem
+## Data Strategy & Disclosure
+Since real order-level RTO datasets are proprietary to companies, I designed a synthetic dataset (8,000 rows, 17 columns) to simulate a realistic Indian D2C environment. 
 
-An online store takes both prepaid and COD orders. Prepaid is safe — the customer already paid. COD is risky — the customer can refuse at the door, and the product comes back. Every RTO (Return to Origin) costs the seller shipping both ways plus packaging.
+The data generation rules are not random. They are based on published industry ranges and domain logic. For example:
+- Base COD RTO is set at 15% (vs 2% for Prepaid), reflecting real-world refusal rates.
+- Risk factors like Tier-3 (+4%) and Remote pincodes (+8%) are based on known logistics failure rates in India.
+- No-effect factors (like Weekday or Product Category) were intentionally included as control variables to ensure the analysis is honest.
+- The dataset uses a fixed seed (42) for reproducibility, and messy data (duplicates, missing values, spelling variants) was injected to simulate real-world cleaning challenges.
 
-The real question management asked was simple: **should we call high-risk COD customers before dispatching?**
+## Methodology & Tools
+I followed a strict pipeline to ensure data integrity:
+1. **Data Generation:** Python (pandas) based on the researched business rules.
+2. **Data Cleaning:** Power Query Editor (Excel) to remove duplicates, fix payment mode variants, and handle missing pincodes (8,080 raw rows → 8,000 clean rows).
+3. **Analysis:** SQL (MySQL) to aggregate the KPIs, cross-checked with Excel pivot tables for consistency.
+4. **Visualization:** A 5-page interactive Power BI dashboard featuring dynamic What-If sliders.
 
----
+## Key Findings (Business Impact)
+- **The Core Issue:** COD orders return at **22.63%**, which is more than 4x the Prepaid rate of **5.26%**. 
+- **The Segment:** Only **456 orders (5.7%)** qualified as "high-risk" (COD + New Customer + Order Value ≥ ₹1,500 + Tier-3/Remote pincode). 
+- **The A/B Test:** High-risk orders were split 50/50. The Control group (no call) had a **33.77% RTO**, while the Treatment group (called) had a **25.44% RTO** — a **8.33 percentage point reduction**.
+- **Unit Economics:** The average loss per RTO is **₹196.02**, while the average margin on a delivered order is **₹670.70**.
 
-## About the Data
-
-I could not find a public dataset with actual COD/RTO outcomes for Indian e-commerce, so I built one myself. It is **synthetic** — meaning I designed the rules and generated the data using Python.
-
-I used a fixed seed (42) so anyone can reproduce the same numbers.
-
-- Raw file: 8,080 rows, 18 columns
-- Clean file: 8,000 rows, 17 columns
-- Time period: Jan 2026 to June 2026
-
-I deliberately injected some messy data — missing values, duplicates, and spelling variations — so the cleaning step would be realistic. Real company data is never clean.
-
----
-
-## How I Built It
-
-1. **Wrote the rules first** — a table listing every RTO rule (COD 15%, Prepaid 2%, and the risk factors on top)
-2. **Generated the data** — Python + pandas, following those rules
-3. **Cleaned it** — used Power Query Editor in Excel (removed duplicates, fixed spelling, filled missing values)
-4. **Analysed it** — SQL for the heavy lifting, Excel to cross-check the KPIs
-5. **Built a dashboard** — Power BI with simulation sliders (still working on this)
-
----
-
-## What I Found
-
-Some findings surprised me:
-
-- **COD orders return at 22.63%** — that is more than 4x the prepaid rate of 5.26%
-- **The overall RTO rate is 15.8%** across all dispatched orders
-- **Only 456 orders** qualify as truly "high-risk" (5.7% of all orders) — COD + new customer + order value above Rs 1,500 + in a Tier-3 or Remote pincode
-- **In the A/B test, the treatment group had 25.44% RTO vs 33.77% in control** — the confirmation call did make a difference
-- **Every RTO costs about Rs 196** on average, and my average margin on delivered orders was Rs 671
-
----
-
-## The A/B Test
-
-I structured the data so that high-risk orders were split 50/50 between a control group (no call) and a treatment group (called).
-
-| Group | RTO Rate |
-|---|---|
-| Control (no call) | 33.77% |
-| Treatment (call made) | 25.44% |
-| Difference | ~8 percentage points |
-
-The important part was not just the reduction — it was whether the reduction covers the cost of the call.
-
-**Break-even math:**
-- If a call costs Rs 10: the reduction needs to be more than 5.1 percentage points
-- If a call costs Rs 20: it needs to be more than 10.2 percentage points
-
-That is the whole decision in one line.
-
----
+## The Financial Decision & Break-even
+The key to this project is the break-even analysis. A call isn't always profitable.
+- If a call costs **₹10**, the RTO reduction needs to be greater than **5.1 points** to break even.
+- Since the A/B test showed an **8.33 point reduction**, the strategy is profitable. 
+- **3-Level Impact:**
+  1. **Unit Level:** ₹196.02 loss avoided - ₹10 call cost = ₹186.02 net benefit per prevented RTO.
+  2. **Segment Level:** For all 456 high-risk orders, a 5-point reduction saves ₹4,469, against a call cost of ₹4,560 (Break-even).
+  3. **Pilot Level:** On a 500-order pilot, an 8.33 point reduction saves ₹8,164 against a cost of ₹5,000 (Net Benefit: +₹3,164).
 
 ## My Recommendation
+Do not scale immediately. The numbers are close to break-even at the broader level. 
+**Action:** Pilot the confirmation call on 500 high-risk orders. Measure the actual reduction. If it holds above 5 points, scale it to the full portfolio.
 
-Do not call every COD customer. Call only the high-risk segment — COD + new customer + order value ≥ Rs 1,500 + Tier-3 or Remote pincode.
+## Project Structure & Links
+- **Confluence Documentation:** [BA + DA Portfolio](https://bk7808990.atlassian.net/wiki/spaces/BDPC/pages/13303809/00+Project+Home)(Contains BRD, Process Maps, Data Design Note, and Analysis).
+- **Jira Project Board:** [CODRTO Project](https://bk7808990.atlassian.net/jira/software/projects/CODRTO/list?jql=project%20%3D%20CODRTO%20ORDER%20BY%20cf%5B10019%5D%20ASC)
 
-But — and this is important — the numbers are close to break-even. So I would recommend a pilot on 500 orders first, measure the actual reduction, and then decide whether to scale.
 
-If I had said "this saves money, let's do it" without checking the break-even, I would have been wrong.
 
----
 
-## Impact
+## Limitations & AI Disclosure
+To be fully transparent about the boundaries of this analysis:
 
-Since this is synthetic data, I label everything as **expected impact**, not actual:
+ Synthetic Data: All patterns are design assumptions based on industry logic, not real-world discoveries. The findings cannot be generalised to a real business without a pilot.
 
-- **Per RTO prevented:** Rs 196 loss avoided, minus the Rs 10 call cost
-- **For the segment:** Results look positive but the sample is small (228 per group)
-- **For the whole business:** Total RTO loss is Rs 3.38 lakh; potential saving is Rs 74,860 against a call cost of Rs 76,000 — essentially a wash
+Scope Limitations: The direct loss calculation does not include lost sales, marketing spend, or payment gateway fees.
 
-The whole point of this analysis was to show that the decision is **sensitive** — it depends on how much you spend on the call and how much you actually reduce RTO.
+ AI Workflow: I designed the business logic, data structure, and analytical approach independently. I used AI purely as a coding assistant to accelerate the Python script and DAX formulas. However, I manually reviewed, tested, and validated every calculation against my SQL and Excel outputs to ensure 100% accuracy.
 
----
 
-## Tools I Used
 
-- **Python (pandas)** — data generation
-- **Power Query Editor** — data cleaning
-- **SQL** — analysis (currently working on this)
-- **Excel** — KPI cross-check
-- **Power BI** — dashboard (in progress)
-- **Jira** — project tracking
-- **Confluence** — all the documentation
 
----
 
-## Folder Structure
-
-```
+```text
 cod-rto-order-risk/
 ├── README.md
 ├── data/
-│   ├── raw/          (raw data with injected issues)
-│   └── clean/        (cleaned data)
-├── scripts/
-│   └── generate_data.py
-├── sql/              (SQL analysis)
-├── excel/            (KPI cross-check)
-├── powerbi/          (dashboard)
-└── docs/             (detailed documentation)
-```
+│   ├── raw/          (8,080 rows with injected issues)
+│   └── clean/        (8,000 rows, 17 columns)
+├── scripts/          (Python data generation)
+├── sql/              (8 Analysis queries)
+├── excel/            (KPI cross-check & Sensitivity)
+├── powerbi/          (5-page interactive dashboard)
+└── docs/             (Detailed markdown documentation)
 
-## Documentation
+Limitations & AI Disclosure
+To be fully transparent about the boundaries of this analysis:
 
-All the detailed work — business context, requirements, process maps, data design — is on Confluence:
+Synthetic Data: All patterns are design assumptions based on industry logic, not real-world discoveries. The findings cannot be generalised to a real business without a pilot.
 
-- **Confluence:** [BA + DA Portfolio — COD/RTO](https://bk7808990.atlassian.net/wiki/spaces/BDPC/pages/13303809/00+Project+Home)
-- **Jira:** [CODRTO Project](https://bk7808990.atlassian.net/jira/software/projects/CODRTO/list?jql=project%20%3D%20CODRTO%20ORDER%20BY%20cf%5B10019%5D%20ASC)
+Scope Limitations: The direct loss calculation does not include lost sales, marketing spend, or payment gateway fees.
 
----
+AI Workflow: I designed the business logic, data structure, and analytical approach independently. I used AI purely as a coding assistant to accelerate the Python script and DAX formulas. However, I manually reviewed, tested, and validated every calculation against my SQL and Excel outputs to ensure 100% accuracy.
 
-## What This Project Does Not Do
 
-I want to be honest about the limits:
 
-- All patterns come from my design rules, not real observations
-- These findings cannot be generalised to a real business
-- Direct loss does not include lost sales, marketing, or payment gateway fees
-- "New customer" only means the first order in the 6-month window
-- The high-risk count (456) came out lower than I first expected, because all four conditions must be true at the same time
 
----
 
-## A Note on AI
 
-I designed the business rules and the data structure myself. I used AI (Claude) to help write the Python generation script and to draft some documentation. I reviewed every line, validated the output against expected RTO rates, and made all the analytical decisions myself. The business context and rules are my own work.
 
----
 
-## Where I Am Now
 
-- Phase 1: Setup — done
-- Phase 2: Business Analysis — done
-- Phase 3: Data Design — done
-- Phase 4: Analysis — in progress
-- Phase 5: Power BI Dashboard — pending
-- Phase 6: Recommendations and Impact — pending
-- Phase 7: Final Delivery — pending
+
 
