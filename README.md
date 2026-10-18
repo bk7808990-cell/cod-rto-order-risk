@@ -46,7 +46,8 @@ Do not scale immediately. The numbers are close to break-even at the broader lev
 
 ## Project Structure & Links
 - **Confluence Documentation:** [Project Documentation](https://bk7808990.atlassian.net/wiki/external/YTJjNDgzNzIzMzkwNDYzYzlkYTg0ZjYwNWZhYmU1ZGY)(Contains BRD, Process Maps, Data Design Note, and Analysis).
-- **Jira Project Board:** [CODRTO Project](https://bk7808990.atlassian.net/jira/software/projects/CODRTO/list?jql=project%20%3D%20CODRTO%20ORDER%20BY%20cf%5B10019%5D%20ASC)("Jira board link available upon request (requires login)." 
+- **Jira Project Board:** [CODRTO Project](https://bk7808990.atlassian.net/jira/software/projects/CODRTO/list?jql=project%20%3D%20CODRTO%20ORDER%20BY%20cf%5B10019%5D%20ASC)*(Login required as per Atlassian policy)*
+- **Jira Board Screenshot:** [View Screenshot](docs/jira_p1_board.png.png)
 
 
 
